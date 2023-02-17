@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Map Tests</title>
+{% endblock %}
+
+{% block body %}
+
+<h1>La belle mapeuh</h1>
+
+<div class="map">
+    <div>
+        {{ iframe |safe }}
+    </div>
+    <div>
+        <form action="{{url_for('update_map')}}" method="POST">
+            <ul class="map_filter">
+
+                <li>
+                    <select name="rating" value="" id="select_eval">
+                        <option value="0">Pas de filtre </option>
+                        {% for eval in evals %}
+                        <option value="{{eval}}">{{eval}}</option>
+                        {% endfor %}
+                    </select>
+                </li>
+                <li>
+                    <select name="cp" value="0" id="select_cp">  
+                        <option value="0">Pas de filtre </option>
+                        {% for cp in cps %}
+                        <option value="{{cp}}">{{cp}} </option>
+                        {% endfor %}
+                    </select>
+                    
+                </li>
+                <li>
+                    <input type="submit" value="Mettre à jour les marqueurs">
+                </li>
+            </ul>
+        </form>        
+    </div>
+
+
+
+
+</div>
+
+
+
+{% endblock %}

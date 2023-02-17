@@ -1,0 +1,88 @@
+body, html {
+    margin: 0;
+    font-family: sans-serif;
+}
+/***************************** NAVBAR ************************/
+
+.navbar_list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+/*    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+}
+
+.navbar_list li{
+    float:left;
+}
+.navbar_list li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.navbar_list li a:hover {
+    background-color: #111;
+  }
+
+.active {
+    background-color: #04AA6D;
+  }
+  
+/***************************** FIN NAVBAR **************************/
+
+/***************************** MAP *********************************/
+.map {
+    background-color: gray;
+    opacity: 0.9;
+    padding: 1em;
+    display:flex;
+}
+.map_filter {
+    list-style-type: none;
+    margin: 1em;
+    padding: 1em;
+    overflow: hidden;
+}
+.map_filter li{
+    margin:1em;
+    justify-content: left;
+    align-items: center;
+    display:flex;
+}
+
+/***************************** FIN MAP *****************************/
+.content {
+    margin: 0 auto;
+    width: 400px;
+}
+
+table, td, th {
+    border: 1px solid #aaa;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th {
+    height: 30px;
+}
+
+td {
+    text-align: center;
+    padding: 5px;
+}
+
+.form {
+    margin-top: 20px;
+}
+
+#content {
+    width: 70%;
+}

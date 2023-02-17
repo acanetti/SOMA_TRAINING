@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head  class='intro-header'>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/main.css') }}">
+
+    <script>
+        console.log("{{ url_for('static',filename='css/main.css') }}") 
+        console.log("background-image: url('{{ url_for('static', filename = 'img/resto_background.jpg') }}') no-repeat center fixed;background-size: cover;")
+        console.log(window.location.pathname.split("/")[1])
+    </script>
+    {% block head %} 
+    {% endblock %}
+</head>
+<body>
+
+    {% block nav %}
+    <center>
+        <h1>SOMA, SO FOOD</h1>
+    </center>
+    <center>
+        <h2>Nos restos, tes restos</h2>
+    </center>
+    <ul class="navbar_list">
+        <li><a href="{{url_for('about',n=200)}}" class="item_nav">About us</a></li>
+        <li><a href="{{url_for('todo')}}" class="item_nav">To Do List</a></li>
+        <li><a href="{{url_for('map')}}" class="item_nav">La mapeuh</a></li>
+        <li><a href="{{url_for('evals_map')}}" class="item_nav">Les evaleuh</a></li>
+        <li><a href="{{url_for('draw_something')}}" class="item_nav">Les grapheuh</a></li>
+    </ul>
+
+    {% endblock nav %}
+
+    {% block body %} {% endblock %}
+
+</body>
+</html>
