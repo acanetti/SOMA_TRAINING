@@ -1,25 +1,26 @@
+import pandas as pd
+import numpy as np
+import os
 from flask import *
 from datetime import datetime
 import folium
 from folium.plugins import MarkerCluster
 from folium.features import DivIcon
 from flask_sqlalchemy import SQLAlchemy
-from restinator.models import *
-import pandas as pd
-import numpy as np
-import os
+#from restinator.models import *
+import psycopg2
 
-# import psycopg2
-
-# conn = psycopg2.connect(database="db_name",
-#                         host="db_host",
-#                         user="db_user",
-#                         password="db_pass",
-#                         port="db_port")
+conn = psycopg2.connect(database="restinator",
+                        host="host.docker.internal" ,
+                        user="postgres",
+                        password="admin",
+                        port="5432")
+print(conn.encoding)
+conn.set_client_encoding('UTF8')
 
 app=Flask(__name__)
 app.config.from_object('config')
-n = 150
+n = 10
 
 ########################## GESTION DB
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///test.db'
@@ -57,7 +58,7 @@ class Todo(db.Model):
 #     def __repr__(self):
 #        return '<eval %r>'%self.id
     
-def get_iframe(arrondissement=None,note=None):
+def get_iframe(arrondissement=None,note=None,shiny=False):
     avis = pd.read_csv('restinator/Data/clean_avis.csv',sep='|')
     avis = avis.astype({'Note': 'int32'})
     if note:
@@ -100,9 +101,11 @@ def get_iframe(arrondissement=None,note=None):
                             min_height=500,
                             max_height=500)
         folium.Marker(location = loc,popup = popup).add_to(m)
-
-    iframe = m.get_root()._repr_html_()
-    return iframe
+    if shiny :
+        return m
+    else:
+        iframe = m.get_root()._repr_html_()
+        return iframe
 
 ########################### PAGES ##########################
 @app.route('/',methods=['GET','POST'])
@@ -162,6 +165,16 @@ def map():
     return render_template('map.html',iframe=get_iframe())
 
 
+@app.route('/map_shiny/',methods=['GET','POST'])
+def map_shiny():
+    # cur.execute('SELECT * FROM public.evals LIMIT 1;')
+    # fetchone = cur.fetchone()
+    # resp = {
+    #     'map' : get_iframe(shiny=False),
+    #     'line' : fetchone
+    # }
+    return Response(get_iframe(shiny=False))
+
 @app.route('/update_map/',methods=['POST'])
 def update_map():
     if request.method=='POST':
@@ -174,8 +187,9 @@ def update_map():
 @app.route('/evals_map/',methods=['GET','POST'])
 def evals_map():
     inspections_clean= pd.read_csv('restinator/Data/inspections_clean.csv',sep='|')
+    #inspections_clean = pd.read_sql('SELECT * FROM evals;', conn)
     cps=inspections_clean.code_postal.dropna().unique()
-    evals = inspections_clean.synthese_eval_sanit.unique()
+    evals = inspections_clean.evaluation.unique()
     loc=[48.866667,2.333333] # Paris
     w = "600px"
     h = "450px"
@@ -186,8 +200,8 @@ def evals_map():
     evals_cluster = MarkerCluster(name = "Evaluations").add_to(m_insp)
     for i in range(0,len(inspections_clean)):
         
-        nom = inspections_clean.iloc[i]['app_libelle_etablissement']
-        eval_etab = inspections_clean.iloc[i]['synthese_eval_sanit']
+        nom = inspections_clean.iloc[i]['nom']
+        eval_etab = inspections_clean.iloc[i]['evaluation']
         loc = [inspections_clean.iloc[i]['lat'],inspections_clean.iloc[i]['lon']]
         html =f"""
         <!DOCTYPE html>
@@ -208,7 +222,7 @@ def evals_map():
 
         folium.Marker(location = loc,popup = popup).add_to(
             folium.FeatureGroup(
-                name = inspections_clean.iloc[i]['app_libelle_activite_etablissement']).add_to(
+                name = inspections_clean.iloc[i]['nom']).add_to(
                     evals_cluster))
     iframe = m_insp.get_root()._repr_html_()
     return render_template('evals_map.html',iframe=iframe,
@@ -222,7 +236,10 @@ def evals_map():
 
 @app.route('/about_us/<int:n>',methods=['GET','POST'])
 def about(n):
-    res = ['SO FOOD '*n]
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM evals LIMIT 10;')
+    line = cur.fetchone()
+    res = [line*n]
     return render_template('about_us.html',quant=res)
 
 ########################## FIN ABOUT US
