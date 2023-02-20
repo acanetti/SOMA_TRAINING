@@ -7,10 +7,11 @@ WORKDIR /restinator
 RUN pip install --upgrade pip
 RUN pip install -r /tmp/requirements.txt
 
-COPY . /restinator
+COPY . /restinator/
 
+EXPOSE 3838
 
-CMD [ "python3","run.py" ]
+CMD [ "python3","run.py"]
 
 # docker build -t <nom image> -f Dockerfile .
 # docker run -d -p 8888:8787 <nom image>
